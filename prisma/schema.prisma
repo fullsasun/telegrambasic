@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserActivity {
+  id           String  @id @default(cuid())
+  user_chat_id String  @unique
+  activity     String?
+}
+
+model User {
+  id           String  @id @default(uuid())
+  username     String  @unique
+  user_chat_id String  @unique
+  nim          String  @unique
+  first_name   String?
+  last_name    String?
+  Rent         Rent[]
+  rentId       String?
+}
+
+model Goods {
+  id     String  @id @default(cuid())
+  name   String
+  tag    TagId[]
+  Rent   Rent[]
+  rentId String?
+}
+
+model TagId {
+  id      String        @id @default(cuid())
+  tagId   String        @unique
+  status  GOODS_STATUS?
+  Goods   Goods?        @relation(fields: [goodsId], references: [id])
+  goodsId String?
+}
+
+model Rent {
+  id                 String           @id @default(cuid())
+  good               Goods[]
+  user               User[]
+  quantity           Int?
+  startRent          DateTime?
+  finishRent         DateTime?
+  rentApprovalStatus APPROVAL_STATUS? @default(WAITING)
+  loanStatus         LOAN_STATUS?     @default(NOT_STARTED)
+}
+
+enum APPROVAL_STATUS {
+  ALLOWED
+  REJECTED
+  WAITING
+}
+
+enum LOAN_STATUS {
+  FINISH
+  USED
+  NOT_STARTED
+}
+
+enum GOODS_STATUS {
+  AVAILABLE
+  NOTAVAILABLE
+}
