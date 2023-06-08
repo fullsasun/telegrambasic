@@ -10,7 +10,7 @@ const {
 } = require("./prisma/util");
 const { days } = require("./timeformater");
 
-const token = "5991296312:AAG9S86KRA-Pn8601mKovxG1OkwIXBRGBys";
+const token = "6241382068:AAHcACeUouLpACyz-xf1CDH4Xr_jHTOImBY";
 // Alur Pendafataran
 const USER_ACTIVITY = {};
 
@@ -29,7 +29,7 @@ bot.on("message", async (msg) => {
         message_id: msg.message_id,
     };
 
-    // JIKA USER MENGIRIM PESAN TANPA KONTEKS, PERIKAS AKTIVITAS TERKINI YANG DILAKUKAN USER
+    // JIKA USER MENGIRIM PESAN TANPA KONTEKS, PERIKSA AKTIVITAS TERKINI YANG DILAKUKAN USER
     const userActivity = await getUserActivity(msg);
 
     // JIKA AKTIVITAS TERAKHIR USER ADALAH "FILL_UP_PROFIL" MAKA LAKUKAN FUNGSI DIBAWAH
@@ -98,7 +98,7 @@ bot.onText(/\/start/, async (msg) => {
                             text: "Inventory List",
                             callback_data: "inventorylist",
                         },
-                        { text: "Order Good", callback_data: "peminjaman" },
+                        { text: "Help", callback_data: "peminjaman" },
                     ],
                     [{ text: "My Order", callback_data: "myorder" }],
                 ],
@@ -115,7 +115,7 @@ bot.onText(/\/start/, async (msg) => {
         if (user) {
             text = `Welcome back ${
                 user?.first_name || user?.last_name || user?.username
-            }, to our Inventory Telegram bot! ✨\n
+            }, to our E-Laboratory Telegram bot! ✨\n
             We're glad to see you back and hope that our bot has been helping you manage your inventory efficiently.\n
             As a reminder you can use the list item menu to get a list of all the items you can borrow. The My Rent menu is a list of tools that you have borrowed or are currently borrowing.`;
         }
@@ -148,14 +148,14 @@ bot.onText(/\/command/, (msg) => {
                 ],
                 [
                     { text: "Inventory List", callback_data: "inventorylist" },
-                    { text: "Order Good", callback_data: "peminjaman" },
+                    { text: "Help", callback_data: "help" },
                 ],
                 [{ text: "My Rent Order", callback_data: "myorder" }],
             ],
         }),
     };
     const text =
-        "Hallo Selamat Datang Di Sistem Inventori PNJ, Berikut menu-menu yang bisa anda pilih";
+        "Hello Selamat Datang Di E-Laboratory PNJ, Berikut menu-menu yang bisa anda pilih";
     bot.sendMessage(msg.chat.id, text, options);
 });
 
@@ -204,6 +204,14 @@ bot.on("callback_query", async (query) => {
         );
     }
 
+    if (action == "help") {
+        let text = "";
+        text = 
+            "Halo teman TIK, silahkan disimak ya rules-rules yang harus kamu patuhi ketika melakukan peminjaman alat di E-laboratory TIK";
+
+        bot.editMessageText(text, opts);
+    }
+
     if (action === "inventorylist") {
         const data = await prisma.goods.findMany({
             orderBy: {
@@ -223,6 +231,7 @@ bot.on("callback_query", async (query) => {
         });
         bot.editMessageText("This Is the Item list", opts);
     }
+
 
     if (action.startsWith("order")) {
         const [_, id] = action.split("#");
